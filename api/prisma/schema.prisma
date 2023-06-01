@@ -1,0 +1,37 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(uuid())
+  name        String
+  email       String   @unique
+  created_at  DateTime @default(now())
+  updated_att DateTime @updatedAt
+
+  expanses Expanse[]
+
+  @@map("users")
+}
+
+model Expanse {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  type        String
+  amount      Int
+  created_at  DateTime @default(now())
+  updated_att DateTime @updatedAt
+  User        User?    @relation(fields: [userId], references: [id])
+  userId      String?
+
+  @@map("expanses")
+}
