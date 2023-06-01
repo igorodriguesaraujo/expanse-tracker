@@ -73,9 +73,37 @@ class ExpanseController {
 
   async show(req: Request, res: Response) {
     try {
-      return res.json({ ok: true });
+      const { id } = req.params;
+      const { userid }: any = req.headers;
+
+      if (!userid) {
+        return res
+          .status(400)
+          .json({ error: true, message: "User not exist!" });
+      }
+
+      const user = await prisma.user.findUnique({
+        where: {
+          id: userid,
+        },
+      });
+
+      if (!user) {
+        return res
+          .status(400)
+          .json({ error: true, message: "User not found!" });
+      }
+
+      const expanse = await prisma.expanse.findFirst({
+        where: {
+          id,
+          userId: user.id,
+        },
+      });
+
+      return res.json({ error: false, expanse });
     } catch (err) {
-      return res.json({ error: true });
+      return res.json({ error: true, message: err });
     }
   }
 
